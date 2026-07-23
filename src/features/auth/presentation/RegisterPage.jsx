@@ -44,7 +44,7 @@ export function RegisterPage() {
   };
 
   return (
-    <AuthFormLayout
+    <AuthFormLayout mode="register"
       title={t('auth.registerTitle')}
       footer={
         <p className="form-footer">

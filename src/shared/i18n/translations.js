@@ -6,7 +6,10 @@ export const translations = {
       features: 'Funciones',
       login: 'Ingresar',
       register: 'Registrarse',
-      dashboard: 'Dashboard',
+      dashboard: 'Budget',
+      dashboardClean: 'Dashboard',
+      budgets: 'Presupuestos',
+      goals: 'Metas',
       logout: 'Salir',
     },
     landing: {
@@ -105,7 +108,10 @@ export const translations = {
       features: 'Features',
       login: 'Log in',
       register: 'Sign up',
-      dashboard: 'Dashboard',
+      dashboard: 'Budget',
+      dashboardClean: 'Dashboard',
+      budgets: 'Presupuestos',
+      goals: 'Metas',
       logout: 'Log out',
     },
     landing: {

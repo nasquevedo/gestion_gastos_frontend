@@ -14,16 +14,16 @@ export function PublicLayout({ children }) {
     <div className="app-shell">
       <header className="topbar">
         <Link className="brand" to="/">
-          {t('appName')}
+          <span className="brand-mark">◈</span> {t('appName')}
         </Link>
         <nav className="topbar__nav" aria-label="Principal">
           <NavLink to="/">{t('nav.home')}</NavLink>
-          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/budgets`}>{t('nav.dashboard')}</NavLink> : null}
+          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/dashboard`}>{t('nav.dashboardClean')}</NavLink> : null}`n          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/goals`}>{t('nav.goals')}</NavLink> : null}`n          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/budgets`}>{t('nav.budgets')}</NavLink> : null}
           {!isAuthenticated ? <NavLink to="/login">{t('nav.login')}</NavLink> : null}
           {!isAuthenticated ? <NavLink to="/registro">{t('nav.register')}</NavLink> : null}
         </nav>
         <div className="topbar__actions">
-          <select aria-label="Idioma" value={locale} onChange={(event) => setLocale(event.target.value)}>
+          <select className="locale-select" aria-label="Idioma" value={locale} onChange={(event) => setLocale(event.target.value)}>
             <option value="es">{t('language.es')}</option>
             <option value="en">{t('language.en')}</option>
           </select>
