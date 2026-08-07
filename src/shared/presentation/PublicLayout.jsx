@@ -18,7 +18,9 @@ export function PublicLayout({ children }) {
         </Link>
         <nav className="topbar__nav" aria-label="Principal">
           <NavLink to="/">{t('nav.home')}</NavLink>
-          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/dashboard`}>{t('nav.dashboardClean')}</NavLink> : null}`n          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/goals`}>{t('nav.goals')}</NavLink> : null}`n          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/budgets`}>{t('nav.budgets')}</NavLink> : null}
+          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/dashboard`}>{t('nav.dashboardClean')}</NavLink> : null}          
+          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/goals`}>{t('nav.goals')}</NavLink> : null}          
+          {isAuthenticated ? <NavLink to={`/app/users/${user?.id ?? 'me'}/budgets`}>{t('nav.budgets')}</NavLink> : null}
           {!isAuthenticated ? <NavLink to="/login">{t('nav.login')}</NavLink> : null}
           {!isAuthenticated ? <NavLink to="/registro">{t('nav.register')}</NavLink> : null}
         </nav>

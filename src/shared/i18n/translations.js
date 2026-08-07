@@ -1,6 +1,6 @@
 export const translations = {
   es: {
-    appName: 'Wellness',
+    appName: 'FinTrack',
     nav: {
       home: 'Inicio',
       features: 'Funciones',
@@ -67,6 +67,12 @@ export const translations = {
       addExpense: 'Agregar gasto',
       addFixedExpense: 'Agregar gasto fijo',
       addVariableExpense: 'Agregar gasto variable',
+      addAmount: 'Agregar monto',
+      adjustAmount: 'Ajustar monto',
+      adjustment: 'Valor del ajuste',
+      add: 'Sumar',
+      subtract: 'Restar',
+      applyAdjustment: 'Aplicar ajuste',
       editBudget: 'Editar presupuesto',
       updateBudget: 'Actualizar presupuesto',
       remove: 'Eliminar',
@@ -78,6 +84,11 @@ export const translations = {
       stepTags: 'Etiquetas',
       apiEmpty: 'Aun no hay presupuestos registrados.',
       loadError: 'No pudimos cargar los presupuestos.',
+    },
+    dashboard: {
+      title: 'Fintrack /Dashboard',
+      subtitle: 'Bienvenido de nuevo,',
+      caption: 'Ten una vista clara de tu salud financiera y toma decisiones con confianza.',
     },
     support: {
       contact: 'Contactanos',
@@ -102,7 +113,7 @@ export const translations = {
     },
   },
   en: {
-    appName: 'Wellness',
+    appName: 'FinTrack',
     nav: {
       home: 'Home',
       features: 'Features',
@@ -110,8 +121,8 @@ export const translations = {
       register: 'Sign up',
       dashboard: 'Budget',
       dashboardClean: 'Dashboard',
-      budgets: 'Presupuestos',
-      goals: 'Metas',
+      budgets: 'Budgets',
+      goals: 'Goals',
       logout: 'Log out',
     },
     landing: {
@@ -169,6 +180,12 @@ export const translations = {
       addExpense: 'Add expense',
       addFixedExpense: 'Add fixed expense',
       addVariableExpense: 'Add variable expense',
+      addAmount: 'Add amount',
+      adjustAmount: 'Adjust amount',
+      adjustment: 'Adjustment value',
+      add: 'Add',
+      subtract: 'Subtract',
+      applyAdjustment: 'Apply adjustment',
       editBudget: 'Edit budget',
       updateBudget: 'Update budget',
       remove: 'Remove',
@@ -180,6 +197,11 @@ export const translations = {
       stepTags: 'Tags',
       apiEmpty: 'There are no budgets yet.',
       loadError: 'We could not load budgets.',
+    },
+    dashboard: {
+      title: 'Fintrack /Dashboard',
+      subtitle: 'Welcome Back.',
+      caption: 'A clear view of your financial health to make confident decisions.',
     },
     support: {
       contact: 'Contact us',
