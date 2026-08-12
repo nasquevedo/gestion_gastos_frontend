@@ -86,8 +86,8 @@ export const translations = {
       loadError: 'No pudimos cargar los presupuestos.',
     },
     dashboard: {
-      title: 'Fintrack /Dashboard',
-      subtitle: 'Bienvenido de nuevo,',
+      title: 'Bienvenido a FinTrack',
+      subtitle: 'Toma las riendas de tu futuro financiero gracias a un seguimiento preciso y a análisis automatizados.',
       caption: 'Ten una vista clara de tu salud financiera y toma decisiones con confianza.',
     },
     support: {
@@ -199,8 +199,8 @@ export const translations = {
       loadError: 'We could not load budgets.',
     },
     dashboard: {
-      title: 'Fintrack /Dashboard',
-      subtitle: 'Welcome Back.',
+      title: 'Welcome to FinTrack',
+      subtitle: 'Take command of your financial future with precision tracking and automated insights.',
       caption: 'A clear view of your financial health to make confident decisions.',
     },
     support: {

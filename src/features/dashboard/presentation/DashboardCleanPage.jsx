@@ -11,20 +11,73 @@ import {
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../../../shared/presentation/Button.jsx';
 import { PublicLayout } from '../../../shared/presentation/PublicLayout.jsx';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../auth/presentation/useAuth.js';
+import { calculateBudgetSummary, calculateBudgetSummaryTotals } from '../../budgets/domain/budgetCalculations.js';
+import { useI18n } from '../../../shared/i18n/i18nProvider.jsx';
+import * as budgetRepository from '../../budgets/infrastructure/budgetRepository.js';
+import { DashboardChart } from './DashboardChart.jsx';
 
-const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-const chart = [
-  ['Mon', 65, 40],
-  ['Tue', 80, 35],
-  ['Wed', 45, 55],
-  ['Thu', 90, 20],
-  ['Fri', 70, 45],
-  ['Sat', 55, 25],
-  ['Sun', 40, 30],
+const currency = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' });
+const chartInitialState = [
+  { month: 'Enero', income: 0, expenses: 0 },
+  { month: 'Febrero', income: 0, expenses: 0 },
+  { month: 'Marzo', income: 0, expenses: 0 },
+  { month: 'Abril', income: 0, expenses: 0 },
+  { month: 'Mayo', income: 0, expenses: 0},
+  { month: 'Junio', income: 0, expenses: 0 },
+  { month: 'Julio', income: 0, expenses: 0 },
+  { month: 'Agosto', income: 0, expenses: 0 },
+  { month: 'Septiembre', income: 0, expenses: 0 },
+  { month: 'Octubre', income: 0, expenses: 0 },
+  { month: 'Noviembre', income: 0, expenses: 0 },
+  { month: 'Diciembre', income: 0, expenses: 0 },
 ];
 
 export function DashboardCleanPage() {
   const { userId } = useParams();
+  const { t } = useI18n();
+  const { token, user } = useAuth();
+  const [ budgets, setBudgets ] = useState();
+  const [ status, setStatus ] = useState({ loading: false, error: '' });
+  const [ totals, setTotals ] = useState({ income: 0, savings: 0, fixedExpenses: 0, additionalExpenses: 0, available: 0 });
+  const [ chart, setChart ] = useState(chartInitialState);
+
+  const effectiveUserId = userId === 'me' ? user?.id : userId;
+
+  const loadBudgets = async () => {
+    setStatus({ loading: true, error: '' });
+
+    try {
+      const [budgetsResponse] = await Promise.all([
+        budgetRepository.getBudgetsByUser(effectiveUserId, token),
+      ]);
+      const nextBudgets = budgetsResponse?.budgets ?? [];
+
+      const charts = nextBudgets.map((budget) => {
+        const total = calculateBudgetSummary(budget)
+        return {
+          month: budget.month,
+          income: total.income,
+          expenses: total.fixedExpenses
+        };
+      })
+
+      setChart(charts);
+
+      const totals = calculateBudgetSummaryTotals(nextBudgets);
+      setTotals(totals);
+
+      setBudgets(nextBudgets);
+      setStatus({ loading: false, error: '' });
+    } catch(e) {
+      setStatus({ loading: false, error: t('budget.loadError') });
+    }
+  };
+
+  useEffect(() => {
+    loadBudgets();
+  }, [effectiveUserId, token]);
 
   return (
     <PublicLayout>
@@ -36,40 +89,45 @@ export function DashboardCleanPage() {
           />
           <div className="finance-dashboard__hero-overlay" />
           <div className="finance-dashboard__hero-content">
-            <h1>Welcome to FinTrack</h1>
-            <p>Take command of your financial future with precision tracking and automated insights.</p>
+            <h1>{t('dashboard.title')}</h1>
+            <p>{t('dashboard.subtitle')}</p>
             <Button as={Link} to={`/app/users/${userId}/budgets`} variant="secondary">
-              <Plus size={18} /> Add Budget
+              <Plus size={18} /> {t('budget.newBudget')}
             </Button>
           </div>
         </section>
 
         <div className="finance-dashboard__grid">
           <div className="finance-dashboard__main-column">
-            <section className="finance-card finance-overview">
-              <div className="finance-card__heading">
-                <h2>Last Budget Overview</h2>
-                <div className="finance-legend">
-                  <span><i className="finance-legend__dot finance-legend__dot--income" /> Income</span>
-                  <span><i className="finance-legend__dot finance-legend__dot--expense" /> Expenses</span>
-                </div>
-              </div>
-              <div className="finance-chart" aria-label="Income and expenses by day">
-                {chart.map(([day, income, expenses]) => (
-                  <div className="finance-chart__day" key={day}>
-                    <div className="finance-chart__bars">
-                      <span className="finance-chart__bar finance-chart__bar--income" style={{ height: `${income}%` }} />
-                      <span className="finance-chart__bar finance-chart__bar--expense" style={{ height: `${expenses}%` }} />
-                    </div>
-                    <small>{day}</small>
+            {status.error !== '' && <p>Error:{status.error}</p>}
+            {status.loading && <p>Loading...</p>}
+            {!status.loading && 
+              <section className="finance-card finance-overview">
+                <div className="finance-card__heading">
+                  <h2>Last Budget Overview</h2>
+                  <div className="finance-legend">
+                    <span><i className="finance-legend__dot finance-legend__dot--income" /> Income</span>
+                    <span><i className="finance-legend__dot finance-legend__dot--expense" /> Expenses</span>
                   </div>
-                ))}
-              </div>
-              <div className="finance-summary-widgets">
-                <SummaryWidget icon={<TrendingUp size={22} />} label="Total Income" value={currency.format(12450)} tone="income" />
-                <SummaryWidget icon={<ReceiptText size={22} />} label="Fixed Expenses" value={currency.format(4820)} tone="expense" />
-              </div>
-            </section>
+                </div>
+                <div className="finance-chart" aria-label="Income and expenses by day">
+                  {/*chart.map(([day, income, expenses]) => (
+                    <div className="finance-chart__day" key={day}>
+                      <div className="finance-chart__bars">
+                        <span className="finance-chart__bar finance-chart__bar--income" style={{ height: `${income}%` }} />
+                        <span className="finance-chart__bar finance-chart__bar--expense" style={{ height: `${expenses}%` }} />
+                      </div>
+                      <small>{day}</small>
+                    </div>
+                  ))*/}
+                  <DashboardChart monthlyBudget={chart} />
+                </div>
+                <div className="finance-summary-widgets">
+                  <SummaryWidget icon={<TrendingUp size={22} />} label="Total Income" value={currency.format(totals.income)} tone="income" />
+                  <SummaryWidget icon={<ReceiptText size={22} />} label="Fixed Expenses" value={currency.format(totals.fixedExpenses)} tone="expense" />
+                </div>
+              </section>
+            }
 
             <section className="finance-budgets">
               <div className="finance-section-heading"><h2>All Budgets</h2><Link to={`/app/users/${userId}/budgets`}>View All</Link></div>
