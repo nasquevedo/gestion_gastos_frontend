@@ -1,12 +1,15 @@
 export const translations = {
   es: {
-    appName: 'Wellness',
+    appName: 'FinTrack',
     nav: {
       home: 'Inicio',
       features: 'Funciones',
       login: 'Ingresar',
       register: 'Registrarse',
-      dashboard: 'Dashboard',
+      dashboard: 'Budget',
+      dashboardClean: 'Dashboard',
+      budgets: 'Presupuestos',
+      goals: 'Metas',
       logout: 'Salir',
     },
     landing: {
@@ -64,6 +67,12 @@ export const translations = {
       addExpense: 'Agregar gasto',
       addFixedExpense: 'Agregar gasto fijo',
       addVariableExpense: 'Agregar gasto variable',
+      addAmount: 'Agregar monto',
+      adjustAmount: 'Ajustar monto',
+      adjustment: 'Valor del ajuste',
+      add: 'Sumar',
+      subtract: 'Restar',
+      applyAdjustment: 'Aplicar ajuste',
       editBudget: 'Editar presupuesto',
       updateBudget: 'Actualizar presupuesto',
       remove: 'Eliminar',
@@ -75,6 +84,11 @@ export const translations = {
       stepTags: 'Etiquetas',
       apiEmpty: 'Aun no hay presupuestos registrados.',
       loadError: 'No pudimos cargar los presupuestos.',
+    },
+    dashboard: {
+      title: 'Bienvenido a FinTrack',
+      subtitle: 'Toma las riendas de tu futuro financiero gracias a un seguimiento preciso y a análisis automatizados.',
+      caption: 'Ten una vista clara de tu salud financiera y toma decisiones con confianza.',
     },
     support: {
       contact: 'Contactanos',
@@ -99,13 +113,16 @@ export const translations = {
     },
   },
   en: {
-    appName: 'Wellness',
+    appName: 'FinTrack',
     nav: {
       home: 'Home',
       features: 'Features',
       login: 'Log in',
       register: 'Sign up',
-      dashboard: 'Dashboard',
+      dashboard: 'Budget',
+      dashboardClean: 'Dashboard',
+      budgets: 'Budgets',
+      goals: 'Goals',
       logout: 'Log out',
     },
     landing: {
@@ -163,6 +180,12 @@ export const translations = {
       addExpense: 'Add expense',
       addFixedExpense: 'Add fixed expense',
       addVariableExpense: 'Add variable expense',
+      addAmount: 'Add amount',
+      adjustAmount: 'Adjust amount',
+      adjustment: 'Adjustment value',
+      add: 'Add',
+      subtract: 'Subtract',
+      applyAdjustment: 'Apply adjustment',
       editBudget: 'Edit budget',
       updateBudget: 'Update budget',
       remove: 'Remove',
@@ -174,6 +197,11 @@ export const translations = {
       stepTags: 'Tags',
       apiEmpty: 'There are no budgets yet.',
       loadError: 'We could not load budgets.',
+    },
+    dashboard: {
+      title: 'Welcome to FinTrack',
+      subtitle: 'Take command of your financial future with precision tracking and automated insights.',
+      caption: 'A clear view of your financial health to make confident decisions.',
     },
     support: {
       contact: 'Contact us',

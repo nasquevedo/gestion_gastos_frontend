@@ -4,6 +4,8 @@ import { RegisterPage } from '../../features/auth/presentation/RegisterPage.jsx'
 import { useAuth } from '../../features/auth/presentation/useAuth.js';
 import { BudgetsPage } from '../../features/budgets/presentation/BudgetsPage.jsx';
 import { LandingPage } from '../../features/marketing/presentation/LandingPage.jsx';
+import { DashboardCleanPage } from '../../features/dashboard/presentation/DashboardCleanPage.jsx';
+import { GoalsPage } from '../../features/goals/presentation/GoalsPage.jsx';
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, user } = useAuth();
@@ -26,7 +28,7 @@ function AppEntry() {
     return <Navigate to="/login" replace />;
   }
 
-  return <Navigate to={`/app/users/${user?.id ?? 'me'}/budgets`} replace />;
+  return <Navigate to={`/app/users/${user?.id ?? 'me'}/dashboard`} replace />;
 }
 
 export function AppRouter() {
@@ -37,6 +39,8 @@ export function AppRouter() {
       <Route path="/registro" element={<RegisterPage />} />
       <Route path="/signup" element={<Navigate to="/registro" replace />} />
       <Route path="/app" element={<AppEntry />} />
+      <Route path="/app/users/:userId/dashboard" element={<PrivateRoute><DashboardCleanPage /></PrivateRoute>} />
+      <Route path="/app/users/:userId/goals" element={<PrivateRoute><GoalsPage /></PrivateRoute>} />
       <Route
         path="/app/users/:userId/budgets"
         element={

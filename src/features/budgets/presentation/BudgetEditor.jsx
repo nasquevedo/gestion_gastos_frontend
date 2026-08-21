@@ -1,4 +1,4 @@
-import { Plus, Save, Trash2 } from 'lucide-react';
+import { Minus, Plus, Save, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
@@ -47,6 +47,7 @@ export function BudgetEditor({ budget, onSave }) {
         <Metric label={t('budget.salary')} value={draft.basics.salary} />
         <Metric label={t('budget.savings')} value={summary.savings} />
         <Metric label={t('budget.fixedExpenses')} value={summary.fixedExpenses} />
+        <Metric label={t('budget.variableExpenses')} value={summary.additionalExpenses} />
       </div>
 
       <div className="content-grid">
@@ -179,13 +180,89 @@ function EditableRows({ title, addLabel, rows, nameField, amountField, nameLabel
             </label>
             <label>
               {amountLabel}
-              <input type="number" value={row[amountField]} onChange={(event) => update(index, amountField, event.target.value)} />
+              <IncrementAmount
+                value={row[amountField]}
+                onChange={(value) => update(index, amountField, value)}
+                label={amountLabel}
+              />
             </label>
             <IconButton label={t('budget.remove')} onClick={() => remove(index)} />
           </div>
         ))}
       </div>
     </section>
+  );
+}
+
+function IncrementAmount({ value, onChange, label }) {
+  const { t } = useI18n();
+  const [isOpen, setIsOpen] = useState(false);
+  const [operation, setOperation] = useState('add');
+  const [adjustment, setAdjustment] = useState('');
+  const currentValue = Number(value || 0);
+  const hasValue = value !== '' && value !== null && value !== undefined;
+
+  const applyAdjustment = (event) => {
+    event.preventDefault();
+    const amount = Number(adjustment);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return;
+    }
+
+    const nextValue = operation === 'add' ? currentValue + amount : Math.max(0, currentValue - amount);
+    onChange(String(nextValue));
+    setAdjustment('');
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="increment-amount">
+      <button
+        className={`amount-trigger ${hasValue ? '' : 'amount-trigger--empty'}`.trim()}
+        type="button"
+        aria-expanded={isOpen}
+        aria-label={`${label}: ${hasValue ? currency.format(currentValue) : t('budget.addAmount')}`}
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        {hasValue ? currency.format(currentValue) : t('budget.addAmount')}
+        <Plus size={16} />
+      </button>
+      {isOpen ? (
+        <form className="increment-popover" onSubmit={applyAdjustment}>
+          <div className="increment-popover__header">
+            <strong>{t('budget.adjustAmount')}</strong>
+            <button type="button" className="increment-popover__close" onClick={() => setIsOpen(false)} aria-label={t('budget.cancel')}>
+              ×
+            </button>
+          </div>
+          <div className="increment-toggle" role="group" aria-label={t('budget.adjustAmount')}>
+            <button className={operation === 'add' ? 'active' : ''} type="button" onClick={() => setOperation('add')}>
+              <Plus size={15} /> {t('budget.add')}
+            </button>
+            <button className={operation === 'subtract' ? 'active' : ''} type="button" onClick={() => setOperation('subtract')}>
+              <Minus size={15} /> {t('budget.subtract')}
+            </button>
+          </div>
+          <label>
+            {t('budget.adjustment')}
+            <input
+              autoFocus
+              min="0"
+              step="1"
+              type="number"
+              inputMode="decimal"
+              value={adjustment}
+              onChange={(event) => setAdjustment(event.target.value)}
+              placeholder="0"
+            />
+          </label>
+          <button className="button button--primary increment-popover__submit" type="submit">
+            {t('budget.applyAdjustment')}
+          </button>
+        </form>
+      ) : null}
+    </div>
   );
 }
 

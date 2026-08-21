@@ -16,6 +16,18 @@ export function calculateBudgetSummary(budget) {
   };
 }
 
+export function calculateBudgetSummaryTotals(budgets) {
+  return budgets.reduce((totals, budget) => {
+    const summary = calculateBudgetSummary(budget);
+    totals.income += summary.income;
+    totals.savings += summary.savings;
+    totals.fixedExpenses += summary.fixedExpenses;
+    totals.additionalExpenses += summary.additionalExpenses;
+    totals.available += summary.available;
+    return totals;
+  }, { income: 0, savings: 0, fixedExpenses: 0, additionalExpenses: 0, available: 0 });
+}
+
 export function chartSegments(budget) {
   const summary = calculateBudgetSummary(budget);
   const parts = [
