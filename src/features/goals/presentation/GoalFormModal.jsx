@@ -5,13 +5,13 @@ import { Modal } from "../../../shared/presentation/Modal";
 import { useMemo, useState } from "react";
 import { GoalCard } from "./GoalCard";
 
-export const GoalFormModal = ({ onClose }) => {
+export const GoalFormModal = ({ onClose, onSubmit }) => {
+    const currentDate = getCurrentDate();
     const { t } = useI18n();
     const [step, setStep] = useState(0);
     const [message, setMessage] = useState("");
-    const [ goal, setGoal ] = useState({ name: "", type: "", value: "", objective_date: ""});
-    const [ goalError, setGoalError ] = useState({ name: "", type: "", value: "", objective_date: ""})
-    // const [ completedStep, setCompletedStep ] = useState([false, false]);
+    const [ goal, setGoal ] = useState({ name: "", type: "", value: "", current: 0, objective_date: "", status: "pending", created_at: currentDate });
+    const [ goalError, setGoalError ] = useState({ name: "", type: "", value: "", objective_date: "" })
 
     const steps = useMemo(() => ['Tipo Meta', 'Valores', 'Confirmar']);
 
@@ -61,8 +61,8 @@ export const GoalFormModal = ({ onClose }) => {
         index ? setStep(index) : setStep((current) => current + 1);
     }
 
-    const save = () => {
-
+    const save = async () => {
+        await onSubmit(goal);
     }
 
     return (
@@ -145,4 +145,16 @@ const SecondForm = ({ goal, setGoal, goalError }) => {
             <small>{ goalError.objective_date }</small>
         </>
     );
+}
+
+const getCurrentDate = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    let month = currentDate.getMonth() + 1;
+    if (month < 10) {
+        month = `0${month}`;
+    }
+    const day = currentDate.getDay();
+
+    return `${year}-${month}-${day}`;
 }
