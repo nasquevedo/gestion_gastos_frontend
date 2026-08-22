@@ -42,6 +42,7 @@ export function DashboardCleanPage() {
   const [ status, setStatus ] = useState({ loading: false, error: '' });
   const [ totals, setTotals ] = useState({ income: 0, savings: 0, fixedExpenses: 0, additionalExpenses: 0, available: 0 });
   const [ chart, setChart ] = useState(chartInitialState);
+  const [ goals, setGoals ] = useState({ budgets: null });
 
   const effectiveUserId = userId === 'me' ? user?.id : userId;
 
@@ -59,7 +60,8 @@ export function DashboardCleanPage() {
         return {
           month: budget.month,
           income: total.income,
-          expenses: total.fixedExpenses
+          expenses: total.fixedExpenses,
+          additionals: total.additionalExpenses
         };
       })
 
@@ -108,6 +110,7 @@ export function DashboardCleanPage() {
                   <div className="finance-legend">
                     <span><i className="finance-legend__dot finance-legend__dot--income" /> Income</span>
                     <span><i className="finance-legend__dot finance-legend__dot--expense" /> Expenses</span>
+                    <span><i className="finance-legend__dot finance-legend__dot--additionals" /> Additionals</span>
                   </div>
                 </div>
                 <div className="finance-chart" aria-label="Income and expenses by day">
@@ -128,13 +131,12 @@ export function DashboardCleanPage() {
                 </div>
               </section>
             }
-
             <section className="finance-budgets">
               <div className="finance-section-heading"><h2>All Budgets</h2><Link to={`/app/users/${userId}/budgets`}>View All</Link></div>
-              <div className="finance-budget-cards">
+              { goals.budgets !== null && <div className="finance-budget-cards">
                 <BudgetCard icon={<Home size={22} />} title="Household" description="Rent, utilities, and groceries" spent="$2,450" total="$3,000" progress={82} active />
                 <BudgetCard icon={<CarFront size={22} />} title="Transport" description="Fuel, insurance, and transit" spent="$380" total="$500" progress={76} />
-              </div>
+              </div> }
             </section>
           </div>
 

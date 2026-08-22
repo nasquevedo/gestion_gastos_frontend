@@ -2,29 +2,61 @@ import { ArrowLeft, CalendarDays, Check, Goal, Plus, PiggyBank, Plane, ShieldChe
 import { Link, useParams } from 'react-router-dom';
 import { PublicLayout } from '../../../shared/presentation/PublicLayout.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
+import { useEffect, useState } from 'react';
+import * as goalRepository from '../infrastructure/goalRepository.js';
+import { useAuth } from '../../auth/presentation/useAuth.js';
+import { GoalFormModal } from './GoalFormModal.jsx';
+import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 
 const goals=[{name:'Viaje a Europa',icon:Plane,current:3400000,target:8000000,date:'Dic 2025',tone:'purple'},{name:'Fondo de emergencia',icon:ShieldCheck,current:1800000,target:5000000,date:'Ago 2025',tone:'green'},{name:'Nueva laptop',icon:Target,current:2200000,target:3500000,date:'Sep 2025',tone:'orange'}];
 
 const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
 
 export const GoalsPage = () => {
-    const {userId} = useParams();
+    const { userId } = useParams();
+    const [ goals, setGoals] = useState([])
+    const [ status, setStatus ] = useState({ loading: false, error: '' });
+    const { token, user } = useAuth();
+    const [ isModalOpen, setIsModalOpen ] = useState(false); 
+    const { t } = useI18n();
+
+    const effectiveUserId = userId === 'me' ? user?.id : userId;
+
+    const loadGoals = async () => {
+        setStatus({ loading: true, error: '' });
+
+        try {
+            const [ goalsResponse ] = await Promise.all([
+                goalRepository.getGoals(effectiveUserId, token)
+            ]);
+
+            setGoals(goalsResponse);
+            setStatus({ loading: false, error: '' });
+        } catch {
+            setStatus({ loading: false, error: 'Error al obtener las metas' });
+        }
+    }
+
+    useEffect(() => {
+        loadGoals();
+    }, [effectiveUserId, token]);
+
     return (
         <PublicLayout>
             <main className="goals-page">
                 <div className="goals-heading">
                     <div>
                         <Link className="back-link" to={`/app/users/${userId}/dashboard`}><ArrowLeft size={16}/> Dashboard</Link>
-                        <h1>Mis metas financieras</h1>
-                        <p>Convierte tus planes en objetivos alcanzables.</p>
+                        <h1>{ t('goal.title')}</h1>
+                        <p>{ t('goal.subtitle')}</p>
                     </div>
-                    <Button type="button"><Plus size={18}/> Nueva meta</Button>
+                    <Button type="button" onClick={() => setIsModalOpen(true)}><Plus size={18}/> Nueva meta</Button>
                 </div>
                 <section className="goals-summary">
                     <article>
                         <span><Goal size={18}/> Metas activas</span>
-                        <strong>3</strong>
-                        <small>2 en progreso</small>
+                        <strong>{ goals.length }</strong>
+                        <small>0 en progreso</small>
                     </article>
                     <article>
                         <span><PiggyBank size={18}/> Ahorrado</span>
@@ -81,6 +113,7 @@ export const GoalsPage = () => {
                     </div>
                 </section>
             </main>
+            { isModalOpen && <GoalFormModal onClose={ () => setIsModalOpen(false) }/>}
         </PublicLayout>
     )
 }

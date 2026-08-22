@@ -90,6 +90,25 @@ export const translations = {
       subtitle: 'Toma las riendas de tu futuro financiero gracias a un seguimiento preciso y a análisis automatizados.',
       caption: 'Ten una vista clara de tu salud financiera y toma decisiones con confianza.',
     },
+    goal: {
+      title: "Mis metas financieras",
+      subtitle: 'Convierte tus planes en objetivos alcanzables.',
+      saving: {
+        description: "Crea una meta de ahorro, se recomiendas el 20% de tus ingresos"
+      },
+      travel: {
+        description: "Comienza a ahorrar para ese viaje que tanto deseas"
+      },
+      budget: {
+        description: "Crea y Organiza diferentes presupuesto para manejar tu dinero: (renta, mercado, gastos adicionales)"
+      },
+      emergency: {
+        description: "Crea un fondo de emergencia y asignale una meta para que siempre estes cubierto"
+      },
+      investment: {
+        description: "Proponte una meta para invertir en tus planes futuros"
+      }
+    },
     support: {
       contact: 'Contactanos',
       questions: 'Preguntas frecuentes',
@@ -202,6 +221,25 @@ export const translations = {
       title: 'Welcome to FinTrack',
       subtitle: 'Take command of your financial future with precision tracking and automated insights.',
       caption: 'A clear view of your financial health to make confident decisions.',
+    },
+    goal: {
+      title: "My Financial Goals",
+      subtitle: 'Turn your plans into achievable goals.',
+      saving: {
+        description: "Set a savings goal; we recommend 20% of your income"
+      },
+      travel: {
+        description: "Start saving for that trip you've been dreaming of"
+      },
+      budget: {
+        description: "Create and organize different budgets to manage your money: (rent, groceries, miscellaneous expenses)"
+      },
+      emergency: {
+        description: "Create an emergency fund and set a goal for it so you're always covered"
+      },
+      investment: {
+        description: "Set a goal for investing in your future plans"
+      }
     },
     support: {
       contact: 'Contact us',

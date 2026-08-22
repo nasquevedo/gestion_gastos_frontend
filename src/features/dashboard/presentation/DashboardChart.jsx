@@ -23,6 +23,12 @@ export const DashboardChart = ({ monthlyBudget }) => {
                     fill="#dc2626"
                     radius={[8, 8, 0, 0]}
                 />
+
+                <Bar
+                    dataKey="additionals"
+                    fill="#d61dc7"
+                    radius={[8, 8, 0, 0]}
+                />
             </BarChart>
         </ResponsiveContainer>
     );
