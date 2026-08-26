@@ -1,5 +1,6 @@
 import { Icon, Plus, Trash2 } from "lucide-react";
 
+
 const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
 
 export const GoalCard = ({ name, date, target }) => {

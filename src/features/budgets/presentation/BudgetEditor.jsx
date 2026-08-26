@@ -102,7 +102,7 @@ export function BudgetEditor({ budget, onSave }) {
       </div>
 
       <div className="content-grid">
-        <EditableRows
+        <EditableRowsFixedExpenses
           title={t('budget.fixedExpenses')}
           addLabel={t('budget.addFixedExpense')}
           rows={draft.expenses}
@@ -151,6 +151,50 @@ export function BudgetEditor({ budget, onSave }) {
   );
 }
 
+function EditableRowsFixedExpenses({ title, addLabel, rows, nameField, amountField, nameLabel, amountLabel, onChange }) {
+  const { t } = useI18n();
+
+  const update = (index, field, value) => {
+    onChange(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
+  };
+
+  const remove = (index) => {
+    const nextRows = rows.filter((_, rowIndex) => rowIndex !== index);
+    onChange(nextRows.length ? nextRows : [{ [nameField]: '', [amountField]: '' }]);
+  };
+
+  return (
+    <section className="panel">
+      <div className="panel-heading">
+        <h2>{title}</h2>
+        <Button type="button" variant="secondary" onClick={() => onChange([...rows, { [nameField]: '', [amountField]: '' }])}>
+          <Plus size={18} /> {addLabel}
+        </Button>
+      </div>
+      <div className="editable-rows">
+        {rows.map((row, index) => (
+          <div className="editable-row" key={index}>
+            <label>
+              {nameLabel}
+              {/*<input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} />*/}
+              <label>{t(`budget.${row[nameField]}`)}</label>
+            </label>
+            <label>
+              {amountLabel}
+              <IncrementAmount
+                value={row[amountField]}
+                onChange={(value) => update(index, amountField, value)}
+                label={amountLabel}
+              />
+            </label>
+            <IconButton label={t('budget.remove')} onClick={() => remove(index)} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function EditableRows({ title, addLabel, rows, nameField, amountField, nameLabel, amountLabel, onChange }) {
   const { t } = useI18n();
 
@@ -176,7 +220,7 @@ function EditableRows({ title, addLabel, rows, nameField, amountField, nameLabel
           <div className="editable-row" key={index}>
             <label>
               {nameLabel}
-              <input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} />
+              { <input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} /> }
             </label>
             <label>
               {amountLabel}

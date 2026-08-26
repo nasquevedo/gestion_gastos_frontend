@@ -1,21 +1,45 @@
 import { Plus, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
 import { Modal } from '../../../shared/presentation/Modal.jsx';
+import * as expenseTypeRepository from '../infrastructure/expenseTypeRepository.js';
+import { useAuth } from '../../auth/presentation/useAuth.js';
+import { useParams } from 'react-router-dom';
 
 const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
 export function BudgetFormModal({ onClose, onSubmit }) {
   const { t } = useI18n();
+  const { userId } = useParams();
+  const { token, user } = useAuth();
   const currentYear = new Date().getFullYear();
   const [step, setStep] = useState(0);
   const [basics, setBasics] = useState({ year: String(currentYear), month: monthNames[new Date().getMonth()], salary: '', save: '0', additionalIncome: '0' });
   const [expenses, setExpenses] = useState([{ expense: '', amount: '' }]);
   const [tags, setTags] = useState([{ tag: '' }]);
   const [error, setError] = useState('');
+  const [ expenseTypes, setExpenseTypes ] = useState([]);
+
+  const effectiveUserId = userId === 'me' ? user?.id : userId;
 
   const steps = useMemo(() => [t('budget.stepBasics'), t('budget.stepExpenses'), t('budget.stepTags')], [t]);
+
+  const loadExpenseTypes = async () => {
+    try {
+      const [ expenseTypesResponse ] = await Promise.all([
+        expenseTypeRepository.getExpenseTypes(token)
+      ]);
+
+      setExpenseTypes(expenseTypesResponse.expenseTypes);
+    } catch {
+
+    }
+  }
+
+  useEffect(() => {
+    loadExpenseTypes()
+  }, [effectiveUserId, token]);
 
   const save = async () => {
     setError('');
@@ -118,6 +142,8 @@ export function BudgetFormModal({ onClose, onSubmit }) {
           setRows={setExpenses}
           labels={{ name: t('budget.expense'), amount: t('budget.amount'), add: t('budget.addExpense') }}
           shape={{ name: 'expense', amount: 'amount' }}
+          expenseTypes={expenseTypes}
+          t={t}
         />
       ) : null}
       {step === 2 ? <TagRows rows={tags} setRows={setTags} label={t('budget.tags')} /> : null}
@@ -139,14 +165,20 @@ export function BudgetFormModal({ onClose, onSubmit }) {
   );
 }
 
-function DynamicRows({ rows, setRows, labels, shape }) {
+function DynamicRows({ rows, setRows, labels, shape, expenseTypes, t }) {
   return (
     <div className="form-stack">
       {rows.map((row, index) => (
         <div className="two-column" key={index}>
           <label>
             {labels.name}
-            <input value={row[shape.name]} onChange={(event) => updateRow(setRows, index, shape.name, event.target.value)} />
+            {/*<input value={row[shape.name]} />*/}
+            <select onChange={(event) => updateRow(setRows, index, shape.name, event.target.value)}>
+              <option value="">Seleccione el tipo de gasto</option>
+              { expenseTypes.map((type, index) => (
+                <option key={index} value={type.name}>{t(`budget.${type.name}`)}</option>
+              ))}
+            </select>
           </label>
           <label>
             {labels.amount}
