@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/presentation/useAuth.js';
 import * as budgetRepository from '../infrastructure/budgetRepository.js';
+import * as goalRepository from '../../goals/infrastructure/goalRepository.js'
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
 import { PublicLayout } from '../../../shared/presentation/PublicLayout.jsx';
 import { BudgetEditor } from './BudgetEditor.jsx';
 import { BudgetFormModal } from './BudgetFormModal.jsx';
+import { calculateGoal } from '../../goals/domain/goalCalculations.js';
 
 export function BudgetsPage() {
   const { userId } = useParams();
@@ -17,6 +19,7 @@ export function BudgetsPage() {
   const [currentBudget, setCurrentBudget] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState({ loading: true, error: '' });
+  const [ goals, setGoals ] = useState([]);
 
   const effectiveUserId = userId === 'me' ? user?.id : userId;
 
@@ -24,14 +27,17 @@ export function BudgetsPage() {
     setStatus({ loading: true, error: '' });
 
     try {
-      const [budgetsResponse, currentResponse] = await Promise.all([
+      const [budgetsResponse, currentResponse, goalResponse] = await Promise.all([
         budgetRepository.getBudgetsByUser(effectiveUserId, token),
         budgetRepository.getCurrentBudgetByUser(effectiveUserId, token),
+        goalRepository.getCurrentBudgetGoals(token)
       ]);
       const nextBudgets = budgetsResponse?.budgets ?? [];
       const nextCurrentBudget = currentResponse?.budget?.[0] ?? currentResponse?.budget ?? nextBudgets[0] ?? null;
+      const nextGoals = goalResponse?.goals ?? [];
       setBudgets(nextBudgets);
       setCurrentBudget(nextCurrentBudget);
+      setGoals(nextGoals);
       setStatus({ loading: false, error: '' });
     } catch {
       setStatus({ loading: false, error: t('budget.loadError') });
@@ -51,6 +57,9 @@ export function BudgetsPage() {
   const saveBudget = async (nextBudget) => {
     setCurrentBudget(nextBudget);
     setBudgets((current) => current.map((budget) => (budget._id === nextBudget._id ? nextBudget : budget)));
+    if (goals.length > 0) {
+      calculateGoal(goals, nextBudget, token);
+    }
     await budgetRepository.updateBudget(token, nextBudget);
     await loadBudgets();
   };

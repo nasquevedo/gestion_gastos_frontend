@@ -4,14 +4,17 @@ import { Button } from "../../../shared/presentation/Button";
 import { Modal } from "../../../shared/presentation/Modal";
 import { useMemo, useState } from "react";
 import { GoalCard } from "./GoalCard";
+import { SelectMonth } from "../../../shared/presentation/SelectMonth";
+
+const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
 export const GoalFormModal = ({ onClose, onSubmit }) => {
     const currentDate = getCurrentDate();
     const { t } = useI18n();
     const [step, setStep] = useState(0);
     const [message, setMessage] = useState("");
-    const [ goal, setGoal ] = useState({ name: "", type: "", value: "", current: 0, objective_date: "", status: "pending", created_at: currentDate });
-    const [ goalError, setGoalError ] = useState({ name: "", type: "", value: "", objective_date: "" })
+    const [ goal, setGoal ] = useState({ name: "", type: "", subtype: "", value: "", current: 0, objective_date: "", month: "", status: "pending", created_at: currentDate });
+    const [ goalError, setGoalError ] = useState({ name: "", type: "", value: "" })
 
     const steps = useMemo(() => ['Tipo Meta', 'Valores', 'Confirmar']);
 
@@ -23,10 +26,21 @@ export const GoalFormModal = ({ onClose, onSubmit }) => {
         { name: 'inversion', value: 'investment', description: 'goal.investment.description' }
     ]);
 
+    const goalSubType = useMemo(() => [
+        { name: "renta", value: 'rent' },
+        { name: "servicios", value: 'utilities' },
+        { name: "internet", value: "internet" },
+        { name: "mercado", value: "groceries" },
+        { name: "transporte", value: "transport" },
+        { name: "educacion", value: "education" }
+    ]);
+
     const selectType = (e) => {
         setGoal({ ...goal, type: e.target.value });
         setMessage(t(`goal.${e.target.value}.description`));
     }
+
+    const selectSubtype = (e) => {}
 
     const completeStep = (index) => {
         if (step === 0 || index === 1) {
@@ -45,11 +59,6 @@ export const GoalFormModal = ({ onClose, onSubmit }) => {
 
             if (goal.value === '') {
                 setGoalError({ ...goalError, value: "Debe asignar un valor"});
-                valid = false;
-            }
-
-            if (goal.objective_date === '') {
-                setGoalError({ ...goalError, objective_date: "Debe seleccionar una fecha objetivo"});
                 valid = false;
             }
 
@@ -96,8 +105,19 @@ export const GoalFormModal = ({ onClose, onSubmit }) => {
                                         <option key={index} value={type.value}>{type.name}</option>
                                     ))}
                                 </select>
+                                <small>{ goalError.type }</small>
                             </label>
-                            <small>{ goalError.type }</small>
+                            { goal.type === 'budget' &&
+                                <label>
+                                    Subtipo Meta
+                                    <select onChange={(e) => selectSubtype(e) }>
+                                        <option value="">Suptipo</option>
+                                        { goalSubType.map((type, index) => (
+                                            <option key={index} value={type.value}>{type.name}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                            }       
                         </>
                     }
                     { step === 1 && <SecondForm goal={goal} setGoal={setGoal} goalError={goalError} /> }
@@ -140,9 +160,12 @@ const SecondForm = ({ goal, setGoal, goalError }) => {
             </div>
             <label>
                 Fecha Objectivo
-                <input type="date" value={goal.objective_date} onChange={(e) => setGoal({ ...goal, objective_date: e.target.value })}/>
+                <input type="date" value={goal.objective_date} onChange={(e) => setGoal({ ...goal, objective_date: e.target.value })} />
             </label>
-            <small>{ goalError.objective_date }</small>
+            <label>
+                Mes
+                <SelectMonth setValue={setGoal} value={goal.month} />
+            </label>
         </>
     );
 }

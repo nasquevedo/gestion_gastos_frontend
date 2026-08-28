@@ -3,10 +3,10 @@ import { Icon, Plus, Trash2 } from "lucide-react";
 
 const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
 
-export const GoalCard = ({ name, date, target }) => {
+export const GoalCard = ({ name, date, target, current, percent }) => {
     const tone = "green";
-    const current = 0;
-    const percent = 0;
+    //const current = 0;
+    //const percent = 0;
 
     return  (
         <article className="goal-card" key={name}>

@@ -22,6 +22,7 @@ export const GoalsPage = () => {
     const { t } = useI18n();
     const [ savings, setSavings ] = useState({ target: 0, current: 0});
     const [ successed, setSuccessed ] = useState(0);
+    const [ inProgress, setInProgress ] = useState(0); 
 
     const effectiveUserId = userId === 'me' ? user?.id : userId;
 
@@ -36,11 +37,13 @@ export const GoalsPage = () => {
             const data = goalsResponse.goals;
 
             const saving = data.filter((goal) => goal.type === 'saving');
-            const completed = data.filter((goal) => goal.status === 'complete');
+            const completed = data.filter((goal) => goal.status === 'completed');
+            const progress = data.filter((goal) => goal.status === 'in_progress');
 
 
             savings.length === 0 && setSavings({current: saving[0].current, target: saving[0].value});
             setSuccessed(completed.length);
+            setInProgress(progress.length);
 
             setGoals(data);
             setStatus({ loading: false, error: '' });
@@ -74,7 +77,7 @@ export const GoalsPage = () => {
                     <article>
                         <span><Goal size={18}/> Metas activas</span>
                         <strong>{ goals.length }</strong>
-                        <small>0 en progreso</small>
+                        <small>{ inProgress } en progreso</small>
                     </article>
                     <article>
                         <span><PiggyBank size={18}/> Ahorrado</span>
@@ -99,7 +102,7 @@ export const GoalsPage = () => {
                     {goals.map(({name,value,current,objective_date})=>{
                         const percent=Math.round(current/value*100);
                         return (
-                            <GoalCard key={name} name={name} target={value} date={objective_date} />
+                            <GoalCard key={name} name={name} target={value} date={objective_date} current={current} percent={percent} />
                             /*<article className="goal-card" key={name}>
                                 <div className={`goal-icon goal-icon--${tone}`}>
                                     <Icon size={22}/></div><div className="goal-card__top">

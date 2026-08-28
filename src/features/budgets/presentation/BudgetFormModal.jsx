@@ -6,6 +6,7 @@ import { Modal } from '../../../shared/presentation/Modal.jsx';
 import * as expenseTypeRepository from '../infrastructure/expenseTypeRepository.js';
 import { useAuth } from '../../auth/presentation/useAuth.js';
 import { useParams } from 'react-router-dom';
+import { SelectMonth } from '../../../shared/presentation/SelectMonth.jsx';
 
 const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
@@ -107,13 +108,14 @@ export function BudgetFormModal({ onClose, onSubmit }) {
             </label>
             <label>
               {t('budget.month')}
-              <select value={basics.month} onChange={(event) => setBasics((current) => ({ ...current, month: event.target.value }))}>
+              <SelectMonth setValue={setBasics} value={basics.month} /> 
+              {/*<select value={basics.month} onChange={(event) => setBasics((current) => ({ ...current, month: event.target.value }))}>
                 {monthNames.map((month) => (
                   <option key={month} value={month}>
                     {month}
                   </option>
                 ))}
-              </select>
+              </select>*/}
             </label>
           </div>
           <label>
