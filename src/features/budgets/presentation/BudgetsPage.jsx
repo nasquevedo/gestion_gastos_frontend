@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/presentation/useAuth.js';
 import * as budgetRepository from '../infrastructure/budgetRepository.js';
-import * as goalRepository from '../../goals/infrastructure/goalRepository.js'
+import * as goalRepository from '../../goals/infrastructure/goalRepository.js';
+import * as expenseTypeRepository from '../infrastructure/expenseTypeRepository.js';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
 import { PublicLayout } from '../../../shared/presentation/PublicLayout.jsx';
@@ -15,11 +16,12 @@ export function BudgetsPage() {
   const { userId } = useParams();
   const { token, user } = useAuth();
   const { t } = useI18n();
-  const [budgets, setBudgets] = useState([]);
-  const [currentBudget, setCurrentBudget] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [status, setStatus] = useState({ loading: true, error: '' });
+  const [ budgets, setBudgets] = useState([]);
+  const [ currentBudget, setCurrentBudget] = useState(null);
+  const [ isModalOpen, setIsModalOpen] = useState(false);
+  const [ status, setStatus] = useState({ loading: true, error: '' });
   const [ goals, setGoals ] = useState([]);
+  const [ expenseTypes, setExpenseTypes ] = useState([]);
 
   const effectiveUserId = userId === 'me' ? user?.id : userId;
 
@@ -27,17 +29,21 @@ export function BudgetsPage() {
     setStatus({ loading: true, error: '' });
 
     try {
-      const [budgetsResponse, currentResponse, goalResponse] = await Promise.all([
+      const [budgetsResponse, currentResponse, expenseTypesResponse, goalResponse] = await Promise.all([
         budgetRepository.getBudgetsByUser(effectiveUserId, token),
         budgetRepository.getCurrentBudgetByUser(effectiveUserId, token),
+        expenseTypeRepository.getExpenseTypes(token),
         goalRepository.getCurrentBudgetGoals(token)
       ]);
       const nextBudgets = budgetsResponse?.budgets ?? [];
       const nextCurrentBudget = currentResponse?.budget?.[0] ?? currentResponse?.budget ?? nextBudgets[0] ?? null;
       const nextGoals = goalResponse?.goals ?? [];
+
       setBudgets(nextBudgets);
       setCurrentBudget(nextCurrentBudget);
       setGoals(nextGoals);
+      setExpenseTypes(expenseTypesResponse.expenseTypes);
+
       setStatus({ loading: false, error: '' });
     } catch {
       setStatus({ loading: false, error: t('budget.loadError') });
@@ -101,7 +107,7 @@ export function BudgetsPage() {
 
             <section className="dashboard-main">
               {currentBudget ? (
-                <BudgetEditor budget={currentBudget} onSave={saveBudget} />
+                <BudgetEditor budget={currentBudget} onSave={saveBudget} expenseTypes={expenseTypes} />
               ) : (
                 <section className="empty-state">
                   <h2>{t('budget.noBudget')}</h2>
@@ -114,7 +120,7 @@ export function BudgetsPage() {
           </div>
         ) : null}
       </main>
-      {isModalOpen ? <BudgetFormModal onClose={() => setIsModalOpen(false)} onSubmit={submitBudget} /> : null}
+      {isModalOpen ? <BudgetFormModal onClose={() => setIsModalOpen(false)} onSubmit={submitBudget} expenseTypes={expenseTypes} /> : null}
     </PublicLayout>
   );
 }

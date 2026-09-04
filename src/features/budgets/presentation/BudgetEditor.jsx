@@ -5,10 +5,11 @@ import { Button } from '../../../shared/presentation/Button.jsx';
 import { applyBudgetDraft, createBudgetDraft } from '../domain/budgetDraft.js';
 import { calculateBudgetSummary } from '../domain/budgetCalculations.js';
 import { BudgetChart } from './BudgetChart.jsx';
+import { SelectExpenseTypes } from '../../../shared/presentation/SelectExpenseTypes.jsx';
 
 const currency = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
 
-export function BudgetEditor({ budget, onSave }) {
+export function BudgetEditor({ budget, onSave, expenseTypes }) {
   const { t } = useI18n();
   const [draft, setDraft] = useState(() => createBudgetDraft(budget));
   const [isSaving, setIsSaving] = useState(false);
@@ -111,6 +112,7 @@ export function BudgetEditor({ budget, onSave }) {
           nameLabel={t('budget.expense')}
           amountLabel={t('budget.amount')}
           onChange={(rows) => setDraft((current) => ({ ...current, expenses: rows }))}
+          expenseTypes={expenseTypes}
         />
         <EditableRows
           title={t('budget.variableExpenses')}
@@ -151,10 +153,11 @@ export function BudgetEditor({ budget, onSave }) {
   );
 }
 
-function EditableRowsFixedExpenses({ title, addLabel, rows, nameField, amountField, nameLabel, amountLabel, onChange }) {
+function EditableRowsFixedExpenses({ title, addLabel, rows, nameField, amountField, nameLabel, amountLabel, onChange, expenseTypes }) {
   const { t } = useI18n();
 
   const update = (index, field, value) => {
+    console.log("Here")
     onChange(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
   };
 
@@ -177,7 +180,13 @@ function EditableRowsFixedExpenses({ title, addLabel, rows, nameField, amountFie
             <label>
               {nameLabel}
               {/*<input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} />*/}
-              <label>{t(`budget.${row[nameField]}`)}</label>
+              {/*<label>{t(`budget.${row[nameField]}`)}</label>*/}
+              {/*<select onChange={(event) => update(index, nameField, event.target.value)}>
+                { expenseTypes.map((index, type) => (
+                  <option key={index} value={type}>type.</option>
+                )) }
+              </select>*/}
+              <SelectExpenseTypes value={row[nameField]} expenseTypes={expenseTypes} update={update} index={index} nameField={nameField} t={t} />
             </label>
             <label>
               {amountLabel}

@@ -3,44 +3,45 @@ import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
 import { Modal } from '../../../shared/presentation/Modal.jsx';
-import * as expenseTypeRepository from '../infrastructure/expenseTypeRepository.js';
-import { useAuth } from '../../auth/presentation/useAuth.js';
-import { useParams } from 'react-router-dom';
+//import * as expenseTypeRepository from '../infrastructure/expenseTypeRepository.js';
+//import { useAuth } from '../../auth/presentation/useAuth.js';
+//import { useParams } from 'react-router-dom';
 import { SelectMonth } from '../../../shared/presentation/SelectMonth.jsx';
+import { SelectExpenseTypes } from '../../../shared/presentation/SelectExpenseTypes.jsx';
 
 const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-export function BudgetFormModal({ onClose, onSubmit }) {
+export function BudgetFormModal({ onClose, onSubmit, expenseTypes }) {
   const { t } = useI18n();
-  const { userId } = useParams();
-  const { token, user } = useAuth();
+  //const { userId } = useParams();
+  //const { token, user } = useAuth();
   const currentYear = new Date().getFullYear();
   const [step, setStep] = useState(0);
   const [basics, setBasics] = useState({ year: String(currentYear), month: monthNames[new Date().getMonth()], salary: '', save: '0', additionalIncome: '0' });
   const [expenses, setExpenses] = useState([{ expense: '', amount: '' }]);
   const [tags, setTags] = useState([{ tag: '' }]);
   const [error, setError] = useState('');
-  const [ expenseTypes, setExpenseTypes ] = useState([]);
+  //const [ expenseTypes, setExpenseTypes ] = useState([]);
 
-  const effectiveUserId = userId === 'me' ? user?.id : userId;
+ // const effectiveUserId = userId === 'me' ? user?.id : userId;
 
   const steps = useMemo(() => [t('budget.stepBasics'), t('budget.stepExpenses'), t('budget.stepTags')], [t]);
 
-  const loadExpenseTypes = async () => {
+  /*const loadExpenseTypes = async () => {
     try {
       const [ expenseTypesResponse ] = await Promise.all([
-        expenseTypeRepository.getExpenseTypes(token)
+        
       ]);
 
       setExpenseTypes(expenseTypesResponse.expenseTypes);
     } catch {
-
+        console.error("Error al tratar de obtener los tipos de gastos");
     }
   }
 
   useEffect(() => {
     loadExpenseTypes()
-  }, [effectiveUserId, token]);
+  }, [effectiveUserId, token]);*/
 
   const save = async () => {
     setError('');
@@ -175,12 +176,13 @@ function DynamicRows({ rows, setRows, labels, shape, expenseTypes, t }) {
           <label>
             {labels.name}
             {/*<input value={row[shape.name]} />*/}
-            <select onChange={(event) => updateRow(setRows, index, shape.name, event.target.value)}>
+            {/*<select onChange={(event) => updateRow(setRows, index, shape.name, event.target.value)}>
               <option value="">Seleccione el tipo de gasto</option>
               { expenseTypes.map((type, index) => (
                 <option key={index} value={type.name}>{t(`budget.${type.name}`)}</option>
               ))}
-            </select>
+            </select>*/}
+            <SelectExpenseTypes setRows={setRows} shape={shape} expenseTypes={expenseTypes} t={t} updateRow={updateRow} module="budget-form" />
           </label>
           <label>
             {labels.amount}

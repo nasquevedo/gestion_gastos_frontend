@@ -1,8 +1,7 @@
 import { updateGoal } from "../infrastructure/goalRepository";
 
 export function calculateGoal(goals, budget, token) {
-    const basics = budget?.basics;
-    const expenses = budget?.expenses;
+    const { basics, expenses } = budget;
 
     for (let index in goals) {
         if (goals[index].type === 'saving') {
@@ -17,6 +16,7 @@ export function calculateGoal(goals, budget, token) {
                 } else {
                     goals[index].status = 'pending';
                 }
+
                 updateGoal(token, goals[index]);
             }
         }
@@ -32,8 +32,43 @@ export function calculateGoal(goals, budget, token) {
                 } else {
                     goals[index].status = 'pending';
                 }
+
                 updateGoal(token, goals[index]);
             }
         }
     }
+}
+
+export function calculateGoalByBudget(goal, budget, token) {
+    const { basics, expenses } = budget[0];
+
+    if (goal.type === 'saving') {
+        const savings = basics.save;
+
+        goal.current = savings;
+
+        if (goal.value >= savings) {
+            goal.status = 'completed';
+        } else if (savings > 0) {
+            goal.status = 'in_progress';
+        } else {
+            goal.status = 'pending';
+        }
+    }
+
+    if (goal.type === 'budget') {
+        const expense = expenses.filter((exp) => exp.expense === goal.subtype);
+        if (expense.length > 0) {
+            goal.current = expense[0].amount;
+            if (expense[0].amount >=  goal.value) {
+                goal.status = 'completed';
+            } else if (expense[0].amount > 0) {
+                goal.status = 'in_progress';
+            } else {
+                goal.status = 'pending';
+            }
+        }
+    }
+
+    updateGoal(token, goal);
 }

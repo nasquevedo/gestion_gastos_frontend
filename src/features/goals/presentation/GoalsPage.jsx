@@ -4,10 +4,12 @@ import { PublicLayout } from '../../../shared/presentation/PublicLayout.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
 import { useEffect, useState } from 'react';
 import * as goalRepository from '../infrastructure/goalRepository.js';
+import * as budgetRepository from '../../budgets/infrastructure/budgetRepository.js';
 import { useAuth } from '../../auth/presentation/useAuth.js';
 import { GoalFormModal } from './GoalFormModal.jsx';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { GoalCard } from './GoalCard.jsx';
+import { calculateGoalByBudget } from '../domain/goalCalculations.js';
 
 const goals=[{name:'Viaje a Europa',icon:Plane,current:3400000,target:8000000,date:'Dic 2025',tone:'purple'},{name:'Fondo de emergencia',icon:ShieldCheck,current:1800000,target:5000000,date:'Ago 2025',tone:'green'},{name:'Nueva laptop',icon:Target,current:2200000,target:3500000,date:'Sep 2025',tone:'orange'}];
 
@@ -16,6 +18,7 @@ const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maxim
 export const GoalsPage = () => {
     const { userId } = useParams();
     const [ goals, setGoals] = useState([])
+    const [ budget, setBudget ] = useState({});
     const [ status, setStatus ] = useState({ loading: false, error: '' });
     const { token, user } = useAuth();
     const [ isModalOpen, setIsModalOpen ] = useState(false); 
@@ -30,8 +33,9 @@ export const GoalsPage = () => {
         setStatus({ loading: true, error: '' });
 
         try {
-            const [ goalsResponse ] = await Promise.all([
-                goalRepository.getGoals(effectiveUserId, token)
+            const [ goalsResponse, budgetResponse ] = await Promise.all([
+                goalRepository.getGoals(effectiveUserId, token),
+                budgetRepository.getCurrentBudgetByUser(effectiveUserId, token)
             ]);
 
             const data = goalsResponse.goals;
@@ -46,6 +50,7 @@ export const GoalsPage = () => {
             setInProgress(progress.length);
 
             setGoals(data);
+            setBudget(budgetResponse.budget);
             setStatus({ loading: false, error: '' });
         } catch {
             setStatus({ loading: false, error: 'Error al obtener las metas' });
@@ -57,9 +62,17 @@ export const GoalsPage = () => {
     }, [effectiveUserId, token]);
 
     const submitGoal = async (goal) => {
-        await goalRepository.createGoal(token, goal);
-        setIsModalOpen(false);
-        await loadGoals();
+        try {
+            const newGoal = await goalRepository.createGoal(token, goal);
+
+            if (budget.length > 0) {
+                calculateGoalByBudget(newGoal.goal, budget, token);
+            }
+            setIsModalOpen(false);
+            await loadGoals();
+        } catch(error) {
+            console.error("error al tratar de crear la meta");
+        }
     }
 
     return (

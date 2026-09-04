@@ -14,7 +14,7 @@ export const GoalFormModal = ({ onClose, onSubmit }) => {
     const [step, setStep] = useState(0);
     const [message, setMessage] = useState("");
     const [ goal, setGoal ] = useState({ name: "", type: "", subtype: "", value: "", current: 0, objective_date: "", month: "", status: "pending", created_at: currentDate });
-    const [ goalError, setGoalError ] = useState({ name: "", type: "", value: "" })
+    const [ goalError, setGoalError ] = useState({ name: "", type: "", subtype: "", value: "" })
 
     const steps = useMemo(() => ['Tipo Meta', 'Valores', 'Confirmar']);
 
@@ -31,7 +31,7 @@ export const GoalFormModal = ({ onClose, onSubmit }) => {
         { name: "servicios", value: 'utilities' },
         { name: "internet", value: "internet" },
         { name: "mercado", value: "groceries" },
-        { name: "transporte", value: "transport" },
+        { name: "transporte", value: "transportation" },
         { name: "educacion", value: "education" }
     ]);
 
@@ -40,13 +40,21 @@ export const GoalFormModal = ({ onClose, onSubmit }) => {
         setMessage(t(`goal.${e.target.value}.description`));
     }
 
-    const selectSubtype = (e) => {}
+    const selectSubtype = (e) => {
+        setGoal({ ...goal,subtype: e.target.value });
+    }
 
     const completeStep = (index) => {
         if (step === 0 || index === 1) {
            if (goal.type === '') {
-                setGoalError({ ...goalError, type: "Debe seleccionar un tipo"});
+                setGoalError({ ...goalError, type: "Debe seleccionar un tipo" });
                 return;
+           }
+
+           if (goal.type === 'budget') {
+                if (goal.subtype === '') {
+                    setGoalError({ ...goalError, subtype: "Debe seleccionar un subtipo" });
+                }
            }
         }
 

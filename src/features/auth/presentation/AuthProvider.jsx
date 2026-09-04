@@ -1,12 +1,20 @@
-import { createContext, useCallback, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import * as authRepository from '../infrastructure/authRepository.js';
+import { isTokenExpired } from '../domain/authSession.js';
 
 const SESSION_KEY = 'budget.session';
 export const AuthContext = createContext(null);
 
 function readStoredSession() {
   try {
-    return JSON.parse(localStorage.getItem(SESSION_KEY));
+    const storedSession = JSON.parse(localStorage.getItem(SESSION_KEY));
+
+    if (isTokenExpired(storedSession?.token)) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+
+    return storedSession;
   } catch {
     return null;
   }
@@ -14,6 +22,40 @@ function readStoredSession() {
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(readStoredSession);
+
+  const clearExpiredSession = useCallback(() => {
+    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem('isLogged');
+    localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
+    setSession(null);
+  }, []);
+
+  useEffect(() => {
+    const handleExpiredSession = () => clearExpiredSession();
+    window.addEventListener('auth:session-expired', handleExpiredSession);
+
+    return () => window.removeEventListener('auth:session-expired', handleExpiredSession);
+  }, [clearExpiredSession]);
+
+  useEffect(() => {
+    if (!session?.token) {
+      return undefined;
+    }
+
+    if (isTokenExpired(session.token)) {
+      clearExpiredSession();
+      return undefined;
+    }
+
+    const decodedPayload = decodeTokenPayload(session.token);
+    if (!decodedPayload?.exp) {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(clearExpiredSession, Math.max(0, decodedPayload.exp * 1000 - Date.now()));
+    return () => window.clearTimeout(timeout);
+  }, [clearExpiredSession, session?.token]);
 
   const signIn = useCallback(async (credentials) => {
     const nextSession = await authRepository.login(credentials);
@@ -31,16 +73,12 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     const token = session?.token;
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem('isLogged');
-    localStorage.removeItem('token');
-    localStorage.removeItem('isAdmin');
-    setSession(null);
+    clearExpiredSession();
 
     if (token) {
       await authRepository.logout(token).catch(() => null);
     }
-  }, [session?.token]);
+  }, [clearExpiredSession, session?.token]);
 
   const value = useMemo(
     () => ({
@@ -55,4 +93,17 @@ export function AuthProvider({ children }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+function decodeTokenPayload(token) {
+  if (!token?.includes('.')) {
+    return null;
+  }
+
+  try {
+    const [, payload] = token.split('.');
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+  } catch {
+    return null;
+  }
 }
