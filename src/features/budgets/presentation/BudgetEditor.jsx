@@ -2,7 +2,7 @@ import { Minus, Plus, Save, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
-import { applyBudgetDraft, createBudgetDraft } from '../domain/budgetDraft.js';
+import { applyBudgetDraftWithCash, createBudgetDraft } from '../domain/budgetDraft.js';
 import { calculateBudgetSummary } from '../domain/budgetCalculations.js';
 import { BudgetChart } from './BudgetChart.jsx';
 import { SelectExpenseTypes } from '../../../shared/presentation/SelectExpenseTypes.jsx';
@@ -13,7 +13,7 @@ export function BudgetEditor({ budget, onSave, expenseTypes }) {
   const { t } = useI18n();
   const [draft, setDraft] = useState(() => createBudgetDraft(budget));
   const [isSaving, setIsSaving] = useState(false);
-  const previewBudget = useMemo(() => applyBudgetDraft(budget, draft), [budget, draft]);
+  const previewBudget = useMemo(() => applyBudgetDraftWithCash(budget, draft), [budget, draft]);
   const summary = useMemo(() => calculateBudgetSummary(previewBudget), [previewBudget]);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function BudgetEditor({ budget, onSave, expenseTypes }) {
 
   const save = async () => {
     setIsSaving(true);
-    await onSave(applyBudgetDraft(budget, draft));
+    await onSave(applyBudgetDraftWithCash(budget, draft));
     setIsSaving(false);
   };
 
@@ -49,6 +49,7 @@ export function BudgetEditor({ budget, onSave, expenseTypes }) {
         <Metric label={t('budget.savings')} value={summary.savings} />
         <Metric label={t('budget.fixedExpenses')} value={summary.fixedExpenses} />
         <Metric label={t('budget.variableExpenses')} value={summary.additionalExpenses} />
+        <Metric label="Cash" value={summary.cash} />
       </div>
 
       <div className="content-grid">
@@ -98,6 +99,14 @@ export function BudgetEditor({ budget, onSave, expenseTypes }) {
                 />
               </label>
             </div>
+            <label>
+              Efectivo
+              <input
+                type="number" 
+                value={draft.basics.cash}
+                onChange={(event) => updateDraft(['basics', 'cash'], event.target.value)}
+              />
+            </label>
           </div>
         </section>
       </div>
@@ -157,7 +166,6 @@ function EditableRowsFixedExpenses({ title, addLabel, rows, nameField, amountFie
   const { t } = useI18n();
 
   const update = (index, field, value) => {
-    console.log("Here")
     onChange(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
   };
 

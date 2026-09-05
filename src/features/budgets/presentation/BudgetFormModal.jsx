@@ -17,7 +17,7 @@ export function BudgetFormModal({ onClose, onSubmit, expenseTypes }) {
   //const { token, user } = useAuth();
   const currentYear = new Date().getFullYear();
   const [step, setStep] = useState(0);
-  const [basics, setBasics] = useState({ year: String(currentYear), month: monthNames[new Date().getMonth()], salary: '', save: '0', additionalIncome: '0' });
+  const [basics, setBasics] = useState({ year: String(currentYear), month: monthNames[new Date().getMonth()], salary: '', save: '0', additionalIncome: '0', cash: '0' });
   const [expenses, setExpenses] = useState([{ expense: '', amount: '' }]);
   const [tags, setTags] = useState([{ tag: '' }]);
   const [error, setError] = useState('');
@@ -74,6 +74,7 @@ export function BudgetFormModal({ onClose, onSubmit, expenseTypes }) {
         salary: basics.salary,
         save: basics.save || '0',
         additionalIncome: basics.additionalIncome || '0',
+        cash: basics.cash || '0',
       },
       expenses: cleanExpenses,
       tags: cleanTags,
@@ -134,6 +135,15 @@ export function BudgetFormModal({ onClose, onSubmit, expenseTypes }) {
                 type="number"
                 value={basics.additionalIncome}
                 onChange={(event) => setBasics((current) => ({ ...current, additionalIncome: event.target.value }))}
+              />
+            </label>
+            <label>
+              {t('budget.cash')}
+              <input
+                type="number"
+                min="0"
+                value={basics.cash}
+                onChange={(event) => setBasics((current) => ({ ...current, cash: event.target.value }))}
               />
             </label>
           </div>

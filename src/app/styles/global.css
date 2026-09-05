@@ -2219,3 +2219,54 @@ body {
   border-color: var(--color-surface);
   background: var(--color-surface-container-high)
 }
+
+@media (max-width: 900px) {
+  .topbar {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    min-height: 0;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+
+  .topbar__nav {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    gap: 4px;
+    order: 3;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+    width: 100%;
+  }
+
+  .topbar__nav a {
+    flex: 0 0 auto;
+    font-size: .8rem;
+    white-space: nowrap;
+  }
+
+  .topbar__actions {
+    margin-left: auto;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .topbar__actions .button {
+    min-height: 38px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar__actions .button--secondary {
+    font-size: .75rem;
+  }
+
+  .topbar__nav a {
+    padding: 8px 9px;
+  }
+}
