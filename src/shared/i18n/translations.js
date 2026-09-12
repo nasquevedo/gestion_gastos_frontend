@@ -10,6 +10,7 @@ export const translations = {
       dashboardClean: 'Dashboard',
       budgets: 'Presupuestos',
       goals: 'Metas',
+      invoices: 'Facturas',
       logout: 'Salir',
     },
     landing: {
@@ -55,7 +56,13 @@ export const translations = {
       basicInfo: 'Informacion basica',
       salary: 'Salario',
       savings: 'Ahorro',
+      rent: "Renta",
+      groceries: 'Mercado',
+      utilities: 'Servicios',
+      internet: 'Internet',
+      transportation: 'Transporte',
       additionalIncome: 'Ingreso adicional',
+      cash: 'Efectivo disponible',
       available: 'Monto disponible',
       fixedExpenses: 'Gastos fijos',
       additionalExpenses: 'Gastos adicionales',
@@ -90,6 +97,46 @@ export const translations = {
       subtitle: 'Toma las riendas de tu futuro financiero gracias a un seguimiento preciso y a análisis automatizados.',
       caption: 'Ten una vista clara de tu salud financiera y toma decisiones con confianza.',
     },
+    invoice: {
+      eyebrow: 'Módulo Contable • Tiempo Real',
+      title: 'Facturas Procesadas',
+      subtitle: 'Monitorea, concilia y gestiona el historial de facturación y transacciones electrónicas automatizadas.',
+      export: 'Exportar Reporte',
+      new: '+ Nueva Factura',
+      search: 'Buscar transacciones, facturas...',
+      empty: 'No encontramos facturas con esos criterios.',
+      showing: 'Mostrando',
+      of: 'de',
+      processedPlural: 'facturas procesadas',
+      filters: { title: 'Filtrar facturas', all: 'Todas', processed: 'Procesadas', pending: 'Pendientes', failed: 'Fallidas' },
+      table: { invoice: 'Factura', supplier: 'Proveedor / Emisor', category: 'Categoría', due: 'Vencimiento', amount: 'Monto', status: 'Estado', actions: 'Acciones' },
+      status: { processed: 'Procesada', pending: 'Pendiente', failed: 'Fallida' },
+      actions: { approve: 'Aprobar', retry: 'Reintentar', download: 'Descargar PDF', options: 'Opciones' },
+      metrics: {
+        processed: 'Total Procesadas', processedDetail: '128 facturas liquidadas', pending: 'Pendientes de Pago', pendingDetail: 'Conciliación manual', pendingBadge: '14 en cola', failed: 'Facturas Fallidas', failedDetail: '3 con error bancario/SAT', failedBadge: 'Atención inmediata', ocr: 'Tiempo Medio OCR', ocrDetail: '99.4% precisión en lectura', ocrBadge: 'Motor IA Activo', seconds: 'segundos',
+      },
+      sync: { label: 'Sincronización Bancaria', time: 'Hace 4 minutos', title: 'Conciliación tributaria automatizada vía API', description: 'Todos los comprobantes, facturas electrónicas y recibos PDF se procesan mediante análisis semántico directo a tu cuenta contable.', action: 'Forzar Sincronización' },
+      info: { validationTitle: 'Validación Criptográfica', validationText: 'Cada factura cuenta con sello digital verificado ante autoridades fiscales nacionales.', ocrTitle: 'Extracción OCR con IA', ocrText: 'Extracción automática de campos clave, impuestos desglosados y número de cuenta.', erpTitle: 'Conciliación con ERP', erpText: 'Exportación directa a QuickBooks, NetSuite, SAP y hojas de cálculo contables.' },
+    },
+    goal: {
+      title: "Mis metas financieras",
+      subtitle: 'Convierte tus planes en objetivos alcanzables.',
+      saving: {
+        description: "Crea una meta de ahorro, se recomiendas el 20% de tus ingresos"
+      },
+      travel: {
+        description: "Comienza a ahorrar para ese viaje que tanto deseas"
+      },
+      budget: {
+        description: "Crea y Organiza diferentes presupuesto para manejar tu dinero: (renta, mercado, gastos adicionales)"
+      },
+      emergency: {
+        description: "Crea un fondo de emergencia y asignale una meta para que siempre estes cubierto"
+      },
+      investment: {
+        description: "Proponte una meta para invertir en tus planes futuros"
+      }
+    },
     support: {
       contact: 'Contactanos',
       questions: 'Preguntas frecuentes',
@@ -123,6 +170,7 @@ export const translations = {
       dashboardClean: 'Dashboard',
       budgets: 'Budgets',
       goals: 'Goals',
+      invoices: 'Invoices',
       logout: 'Log out',
     },
     landing: {
@@ -168,7 +216,13 @@ export const translations = {
       basicInfo: 'Basic information',
       salary: 'Salary',
       savings: 'Savings',
+      rent: "Rent",
+      groceries: 'Groceries',
+      utilities: 'Utilities',
+      internet: 'Internet',
+      transportation: 'Transportation',
       additionalIncome: 'Additional income',
+      cash: 'Available cash',
       available: 'Available amount',
       fixedExpenses: 'Fixed expenses',
       additionalExpenses: 'Additional expenses',
@@ -202,6 +256,46 @@ export const translations = {
       title: 'Welcome to FinTrack',
       subtitle: 'Take command of your financial future with precision tracking and automated insights.',
       caption: 'A clear view of your financial health to make confident decisions.',
+    },
+    invoice: {
+      eyebrow: 'Accounting Module • Real Time',
+      title: 'Processed Invoices',
+      subtitle: 'Monitor, reconcile, and manage your billing history and automated electronic transactions.',
+      export: 'Export Report',
+      new: '+ New Invoice',
+      search: 'Search transactions, invoices...',
+      empty: 'No invoices match those criteria.',
+      showing: 'Showing',
+      of: 'of',
+      processedPlural: 'processed invoices',
+      filters: { title: 'Filter invoices', all: 'All', processed: 'Processed', pending: 'Pending', failed: 'Failed' },
+      table: { invoice: 'Invoice', supplier: 'Supplier / Issuer', category: 'Category', due: 'Due date', amount: 'Amount', status: 'Status', actions: 'Actions' },
+      status: { processed: 'Processed', pending: 'Pending', failed: 'Failed' },
+      actions: { approve: 'Approve', retry: 'Retry', download: 'Download PDF', options: 'Options' },
+      metrics: {
+        processed: 'Total Processed', processedDetail: '128 settled invoices', pending: 'Pending Payment', pendingDetail: 'Manual reconciliation', pendingBadge: '14 in queue', failed: 'Failed Invoices', failedDetail: '3 with bank/SAT error', failedBadge: 'Immediate attention', ocr: 'Average OCR Time', ocrDetail: '99.4% reading accuracy', ocrBadge: 'AI Engine Active', seconds: 'seconds',
+      },
+      sync: { label: 'Bank Synchronization', time: '4 minutes ago', title: 'Automated tax reconciliation via API', description: 'All receipts, electronic invoices, and PDF bills are processed through semantic analysis directly into your accounting account.', action: 'Force Synchronization' },
+      info: { validationTitle: 'Cryptographic Validation', validationText: 'Every invoice has a digital seal verified by national tax authorities.', ocrTitle: 'AI OCR Extraction', ocrText: 'Automatic extraction of key fields, itemized taxes, and account numbers.', erpTitle: 'ERP Reconciliation', erpText: 'Direct export to QuickBooks, NetSuite, SAP, and accounting spreadsheets.' },
+    },
+    goal: {
+      title: "My Financial Goals",
+      subtitle: 'Turn your plans into achievable goals.',
+      saving: {
+        description: "Set a savings goal; we recommend 20% of your income"
+      },
+      travel: {
+        description: "Start saving for that trip you've been dreaming of"
+      },
+      budget: {
+        description: "Create and organize different budgets to manage your money: (rent, groceries, miscellaneous expenses)"
+      },
+      emergency: {
+        description: "Create an emergency fund and set a goal for it so you're always covered"
+      },
+      investment: {
+        description: "Set a goal for investing in your future plans"
+      }
     },
     support: {
       contact: 'Contact us',

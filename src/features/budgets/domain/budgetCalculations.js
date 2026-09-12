@@ -2,10 +2,11 @@ export function calculateBudgetSummary(budget) {
   const salary = Number(budget?.basics?.salary ?? 0);
   const savings = Number(budget?.basics?.save ?? 0);
   const additionalIncome = Number(budget?.basics?.additionalIncome ?? 0);
+  const cash = Number(budget?.basics?.cash ?? 0);
   const fixedExpenses = sumAmounts(budget?.expenses, 'amount');
   const additionalExpenses = sumAmounts(budget?.additionals, 'amount');
   const income = salary + additionalIncome;
-  const available = income - savings - fixedExpenses - additionalExpenses;
+  const available = income - savings - cash - fixedExpenses - additionalExpenses;
 
   return {
     income,
@@ -13,6 +14,7 @@ export function calculateBudgetSummary(budget) {
     fixedExpenses,
     additionalExpenses,
     available,
+    cash
   };
 }
 
@@ -24,8 +26,9 @@ export function calculateBudgetSummaryTotals(budgets) {
     totals.fixedExpenses += summary.fixedExpenses;
     totals.additionalExpenses += summary.additionalExpenses;
     totals.available += summary.available;
+    totals.cash = summary.cash;
     return totals;
-  }, { income: 0, savings: 0, fixedExpenses: 0, additionalExpenses: 0, available: 0 });
+  }, { income: 0, savings: 0, fixedExpenses: 0, cash: 0, additionalExpenses: 0, available: 0 });
 }
 
 export function chartSegments(budget) {

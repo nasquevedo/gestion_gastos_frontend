@@ -22,6 +22,10 @@ export async function httpClient(path, options = {}) {
   const payload = contentType.includes('application/json') ? await response.json() : null;
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('auth:session-expired', { detail: { path } }));
+    }
+
     throw new HttpError(payload?.message ?? 'Request failed', response.status, payload);
   }
 

@@ -14,6 +14,18 @@ export function buildSession(payload) {
   return { token, user };
 }
 
+export function isTokenExpired(token, now = Date.now()) {
+  const decodedToken = decodeJwt(token);
+
+  // Tokens without an exp claim are left to the API to validate. This keeps
+  // compatibility with the current backend while still enforcing JWT expiry.
+  if (!decodedToken?.exp) {
+    return false;
+  }
+
+  return decodedToken.exp * 1000 <= now;
+}
+
 function decodeJwt(token) {
   if (!token?.includes('.')) {
     return null;

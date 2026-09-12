@@ -2,17 +2,18 @@ import { Minus, Plus, Save, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../../../shared/i18n/I18nProvider.jsx';
 import { Button } from '../../../shared/presentation/Button.jsx';
-import { applyBudgetDraft, createBudgetDraft } from '../domain/budgetDraft.js';
+import { applyBudgetDraftWithCash, createBudgetDraft } from '../domain/budgetDraft.js';
 import { calculateBudgetSummary } from '../domain/budgetCalculations.js';
 import { BudgetChart } from './BudgetChart.jsx';
+import { SelectExpenseTypes } from '../../../shared/presentation/SelectExpenseTypes.jsx';
 
 const currency = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
 
-export function BudgetEditor({ budget, onSave }) {
+export function BudgetEditor({ budget, onSave, expenseTypes }) {
   const { t } = useI18n();
   const [draft, setDraft] = useState(() => createBudgetDraft(budget));
   const [isSaving, setIsSaving] = useState(false);
-  const previewBudget = useMemo(() => applyBudgetDraft(budget, draft), [budget, draft]);
+  const previewBudget = useMemo(() => applyBudgetDraftWithCash(budget, draft), [budget, draft]);
   const summary = useMemo(() => calculateBudgetSummary(previewBudget), [previewBudget]);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export function BudgetEditor({ budget, onSave }) {
 
   const save = async () => {
     setIsSaving(true);
-    await onSave(applyBudgetDraft(budget, draft));
+    await onSave(applyBudgetDraftWithCash(budget, draft));
     setIsSaving(false);
   };
 
@@ -48,6 +49,7 @@ export function BudgetEditor({ budget, onSave }) {
         <Metric label={t('budget.savings')} value={summary.savings} />
         <Metric label={t('budget.fixedExpenses')} value={summary.fixedExpenses} />
         <Metric label={t('budget.variableExpenses')} value={summary.additionalExpenses} />
+        <Metric label="Cash" value={summary.cash} />
       </div>
 
       <div className="content-grid">
@@ -97,12 +99,20 @@ export function BudgetEditor({ budget, onSave }) {
                 />
               </label>
             </div>
+            <label>
+              Efectivo
+              <input
+                type="number" 
+                value={draft.basics.cash}
+                onChange={(event) => updateDraft(['basics', 'cash'], event.target.value)}
+              />
+            </label>
           </div>
         </section>
       </div>
 
       <div className="content-grid">
-        <EditableRows
+        <EditableRowsFixedExpenses
           title={t('budget.fixedExpenses')}
           addLabel={t('budget.addFixedExpense')}
           rows={draft.expenses}
@@ -111,6 +121,7 @@ export function BudgetEditor({ budget, onSave }) {
           nameLabel={t('budget.expense')}
           amountLabel={t('budget.amount')}
           onChange={(rows) => setDraft((current) => ({ ...current, expenses: rows }))}
+          expenseTypes={expenseTypes}
         />
         <EditableRows
           title={t('budget.variableExpenses')}
@@ -151,6 +162,56 @@ export function BudgetEditor({ budget, onSave }) {
   );
 }
 
+function EditableRowsFixedExpenses({ title, addLabel, rows, nameField, amountField, nameLabel, amountLabel, onChange, expenseTypes }) {
+  const { t } = useI18n();
+
+  const update = (index, field, value) => {
+    onChange(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [field]: value } : row)));
+  };
+
+  const remove = (index) => {
+    const nextRows = rows.filter((_, rowIndex) => rowIndex !== index);
+    onChange(nextRows.length ? nextRows : [{ [nameField]: '', [amountField]: '' }]);
+  };
+
+  return (
+    <section className="panel">
+      <div className="panel-heading">
+        <h2>{title}</h2>
+        <Button type="button" variant="secondary" onClick={() => onChange([...rows, { [nameField]: '', [amountField]: '' }])}>
+          <Plus size={18} /> {addLabel}
+        </Button>
+      </div>
+      <div className="editable-rows">
+        {rows.map((row, index) => (
+          <div className="editable-row" key={index}>
+            <label>
+              {nameLabel}
+              {/*<input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} />*/}
+              {/*<label>{t(`budget.${row[nameField]}`)}</label>*/}
+              {/*<select onChange={(event) => update(index, nameField, event.target.value)}>
+                { expenseTypes.map((index, type) => (
+                  <option key={index} value={type}>type.</option>
+                )) }
+              </select>*/}
+              <SelectExpenseTypes value={row[nameField]} expenseTypes={expenseTypes} update={update} index={index} nameField={nameField} t={t} />
+            </label>
+            <label>
+              {amountLabel}
+              <IncrementAmount
+                value={row[amountField]}
+                onChange={(value) => update(index, amountField, value)}
+                label={amountLabel}
+              />
+            </label>
+            <IconButton label={t('budget.remove')} onClick={() => remove(index)} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function EditableRows({ title, addLabel, rows, nameField, amountField, nameLabel, amountLabel, onChange }) {
   const { t } = useI18n();
 
@@ -176,7 +237,7 @@ function EditableRows({ title, addLabel, rows, nameField, amountField, nameLabel
           <div className="editable-row" key={index}>
             <label>
               {nameLabel}
-              <input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} />
+              { <input value={row[nameField]} onChange={(event) => update(index, nameField, event.target.value)} /> }
             </label>
             <label>
               {amountLabel}
