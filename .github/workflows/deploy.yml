@@ -2,7 +2,7 @@ name: Deploy React to Github Pages
 
 on:
   push:
-    banches:
+    branches:
       - main
     
   workflow_dispatch:
@@ -19,7 +19,7 @@ concurrency:
 jobs:
   deploy:
     environemnt:
-    
+
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
